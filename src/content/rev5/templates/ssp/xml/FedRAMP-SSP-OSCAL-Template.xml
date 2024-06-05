@@ -4,9 +4,9 @@
    <metadata>
       <title>FedRAMP System Security Plan (SSP)</title>
       <published>2023-08-31T00:00:00Z</published>
-      <last-modified>2023-08-31T00:00:00Z</last-modified>
-      <version>fedramp2.0.0-oscal1.0.4</version>
-      <oscal-version>1.0.4</oscal-version>
+      <last-modified>2024-05-20T00:00:00Z</last-modified>
+      <version>5.1.1+fedramp-20240111-0</version>
+		<oscal-version>1.1.1</oscal-version>
       <revisions>
          <revision>
             <published>2023-06-30T00:00:00Z</published>
@@ -24,6 +24,15 @@
             <prop ns="https://fedramp.gov/ns/oscal" name="party-uuid" value="6b286b5d-8f07-4fa7-8847-1dd0d88f73fb" uuid="528974e9-fcde-494f-a2fa-35d6f1e31171"/>
             <remarks>
                <p>Minor <code>prop</code> updates.</p>
+            </remarks>
+         </revision>
+         <revision>
+            <published>2024-05-20T00:00:00Z</published>
+            <version>5.1.1+fedramp-20240111-0</version>
+		      <oscal-version>1.1.1</oscal-version>
+            <prop ns="https://fedramp.gov/ns/oscal" name="party-uuid" value="6b286b5d-8f07-4fa7-8847-1dd0d88f73fb" uuid="528974e9-fcde-494f-a2fa-35d6f1e31171"/>
+            <remarks>
+               <p>Example for separation of duties support in the OSCAL model.</p>
             </remarks>
          </revision>
       </revisions>
@@ -182,6 +191,40 @@
             <p>This is a sample role.</p>
          </description>
       </role>
+
+      <!-- SEPARATION OF DUTIES EXAMPLE -->
+      <role id="hr">
+         <title>Human Resources (HR)</title>
+         <description>
+            <p>Sample role for HR personnel that access the CSO.</p>
+         </description>
+      </role>
+      <role id="accounting">
+         <title>Accounting</title>
+         <description>
+            <p>Sample role for accounting and procurement personnel that access the CSO.</p>
+         </description>
+      </role>
+      <role id="director">
+         <title>Director</title>
+         <description>
+            <p>Sample for senior managers and division directors that access the CSO.</p>
+         </description>
+      </role>
+      <role id="manager">
+         <title>Manager</title>
+         <description>
+            <p>Sample role for managers that access the CSO.</p>
+         </description>
+      </role>
+      <role id="employee">
+         <title>Employee</title>
+         <description>
+            <p>Sample role for any personnel that access the CSO</p>
+         </description>
+      </role>
+      <!-- SEPARATION OF DUTIES EXAMPLE -->
+
       <location uuid="27b78960-59ef-4619-82b0-ae20b9c709ac">
          <title>CSP HQ</title>
          <address type="work">
@@ -671,13 +714,6 @@
          <prop ns="https://fedramp.gov/ns/oscal" name="authentication-method" value="multi-factor OTP device"/>
          <prop name="type" value="internal"/>
          <role-id>admin-unix</role-id>
-         <authorized-privilege>
-            <title>Full administrative access (root)</title>
-            <function-performed>Add/remove users and hardware</function-performed>
-            <function-performed>install and configure software</function-performed>
-            <function-performed>OS updates, patches and hotfixes</function-performed>
-            <function-performed>perform backups</function-performed>
-         </authorized-privilege>
       </user>
       <user uuid="16ec71e7-025c-43e4-9d3f-3acb485fac2e">
          <title>[SAMPLE]Client Administrator</title>
@@ -687,11 +723,6 @@
          <prop ns="https://fedramp.gov/ns/oscal" name="authentication-method" value="memorized seccret plus SF OTP device"/>
          <prop name="type" value="external"/>
          <role-id>admin-client</role-id>
-         <authorized-privilege>
-            <title>Portal administration</title>
-            <function-performed>Add/remove client users</function-performed>
-            <function-performed>Create, modify and delete client applications</function-performed>
-         </authorized-privilege>
       </user>
       <user uuid="ba7708c1-4041-48ab-9b7b-1ddb5e175fe0">
          <title>[SAMPLE]Program Director</title>
@@ -703,14 +734,6 @@
          <role-id>information-system-security-officer</role-id>
          <role-id>isa-poc-local</role-id>
          <role-id>isa-authorizing-official-local</role-id>
-         <authorized-privilege>
-            <title>Administrative Access Approver</title>
-            <function-performed>Approves access requests for administrative accounts.</function-performed>
-         </authorized-privilege>
-         <authorized-privilege>
-            <title>Access Approver</title>
-            <function-performed>Approves access requests for administrative accounts.</function-performed>
-         </authorized-privilege>
       </user>
       <user uuid="73ae456f-5581-4ff7-9ada-49fc057b2e0b">
          <title>[SAMPLE]ISA POC</title>
@@ -721,11 +744,15 @@
          <prop name="type" value="external"/>
          <role-id>isa-poc-remote</role-id>
          <role-id>isa-authorizing-official-remote</role-id>
-         <authorized-privilege>
-            <title>External System Access Provider</title>
-            <function-performed>Authorizes access to external interconnected system.</function-performed>
-         </authorized-privilege>
       </user>
+      <user uuid="06034aae-d58a-4b1a-a615-35bc61e274bd">
+         <title>Customer agency users</title>
+         <prop name="type" value="external" />
+         <prop name="privilege-level" value="non-privileged" />
+         <!-- use of prop to reference authorized-privileges-->
+      </user>
+
+      <!-- SEPARATION OF DUTIES EXAMPLE-->
       <!-- Components -->
       <!-- OSCAL requires existance of a "this-system" component -->
       <component uuid="60f92bcf-f353-4236-9803-2a5d417555f4" type="this-system">
@@ -735,7 +762,63 @@
             <p>Email is employed</p>
          </description>
          <status state="operational"/>
+         <authorized-privilege-v2>
+            <title>Request New Training - for self</title>
+            <function-performed>Authorizes access to request training (for self) from the catalog.</function-performed>
+            <role-id>"employee"</role-id>
+         </authorized-privilege-v2>
+         <authorized-privilege-v2>
+            <title>Request New Training - for employee</title>
+            <function-performed>Authorizes access to request training (for employee) from the catalog.</function-performed>
+            <role-id>"manager"</role-id>
+            <role-id>"director"</role-id>
+            <role-id>"hr"</role-id>
+            <!-- alternatively, can associate with director user instead of role -->
+            <user-uuid>ba7708c1-4041-48ab-9b7b-1ddb5e175fe0</user-uuid>
+         </authorized-privilege-v2>
+         <authorized-privilege-v2>
+            <title>Approve Employee Training Request</title>
+            <function-performed>Authorizes access to approve employee training requests</function-performed>
+            <role-id>"manager"</role-id>
+            <role-id>"director"</role-id>
+            <!-- alternatively, can associate with director user instead of role -->
+            <user-uuid>ba7708c1-4041-48ab-9b7b-1ddb5e175fe0</user-uuid>
+         </authorized-privilege-v2>
+         <authorized-privilege-v2>
+            <title>Approve Manager Training Request</title>
+            <function-performed>Authorizes access to approve manager training requests</function-performed>
+            <role-id>"director"</role-id>
+            <!-- alternatively, can associate with director user instead of role -->
+            <user-uuid>ba7708c1-4041-48ab-9b7b-1ddb5e175fe0</user-uuid>
+         </authorized-privilege-v2>
+         <authorized-privilege-v2>
+            <title>Procure Training</title>
+            <function-performed>Authorizes access to set billing information</function-performed>
+            <function-performed>Authorizes access to execute purchase of training modules</function-performed>
+            <role-id>"accounting"</role-id>
+         </authorized-privilege-v2>
+         <authorized-privilege-v2>
+            <title>Configure Training</title>
+            <function-performed>Authorizes access to configure any purchased training modules in the system.</function-performed>
+            <role-id>"hr"</role-id>
+         </authorized-privilege-v2>
+         <authorized-privilege-v2>
+            <title>Register for Approved Training</title>
+            <function-performed>Authorizes access to sign up for and take approved training modules.</function-performed>
+            <role-id>"employee"</role-id>
+            <role-id>"manager"</role-id>
+         </authorized-privilege-v2>
+         <authorized-privilege-v2>
+            <title>View Employee Training Records</title>
+            <function-performed>Authorizes access to view employee training records.</function-performed>
+            <role-id>"manager"</role-id>
+            <role-id>"director"</role-id>
+            <role-id>"hr"</role-id>
+            <!-- alternatively, can associate with director user instead of role -->
+            <user-uuid>ba7708c1-4041-48ab-9b7b-1ddb5e175fe0</user-uuid>
+         </authorized-privilege-v2>
       </component>
+      <!-- SEPARATION OF DUTIES EXAMPLE-->
 
       <!-- NOTE: when applicable, all components must specify services, ports, and protocols (Section 9) -->
       <!-- Additionally, all components that use or implement enryption must reference a cryptographic module component -->
@@ -3552,21 +3635,8 @@
             <p>Images must be in sufficient resolution to read all detail when rendered in a browser via HTML5.</p>
          </remarks>
       </resource>
-      <!-- Section 11 - Separation of Duties -->
-      <resource uuid="49fb4631-1da2-41ca-b0b3-e1b1006d4025">
-         <title>Separation of Duties Matrix</title>
-         <description>
-            <p>Separation of Duties Matrix</p>
-         </description>
-         <prop ns="https://fedramp.gov/ns/oscal" name="type" value="separation-of-duties-matrix"/>
-         <prop name="published" value="2023-01-01T00:00:00Z"/>
-         <!-- document date -->
-         <prop name="version" value="Document Version"/>
-         <rlink href="./documents/Sep_Matrix.docx" media-type="application/msword"/>
-         <base64 filename="Sep_Matrix.docx" media-type="application/msword">00000000</base64>
-         <remarks>
-            <p>May use <code>rlink</code> with a relative path, or embedded as <code>base64</code>.</p>
-         </remarks>
-      </resource>
+
+      <!-- Section 11 - Removed back-matter resource for Separation of Duties -->
+
    </back-matter>
 </system-security-plan>
